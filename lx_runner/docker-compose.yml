@@ -1,0 +1,64 @@
+version: "2"
+
+services:
+    dbhost:
+      image: loftux/lx_mariadb:latest
+      volumes:
+        - ./dbdata:/var/lib/mysql
+      restart: always
+      ports: 
+        - 127.0.0.1:3306:3306
+      environment:
+        MYSQL_ROOT_PASSWORD: GNBbNLvjQMuvoRu69N
+
+    alfhost:
+      image: loftux/lx_corpalf:latest
+      ports: 
+        - 127.0.0.1:8080:8080
+      volumes: 
+        - ./shared:/opt/alfresco/tomcat/shared
+        - ./alf_data:/opt/alfresco/alf_data
+      restart: always
+      depends_on: 
+        - dbhost
+
+    sharehost:
+      image: loftux/lx_corpshare:latest
+      ports: 
+        - 127.0.0.1:8081:8080
+      volumes: 
+        - ./sharedshare:/opt/alfresco/tomcat/shared
+      restart: always
+
+    solrhost:
+      image: loftux/lx_alfresco_search:latest
+      environment:
+          #Solr needs to know how to register itself with Alfresco
+          - SOLR_ALFRESCO_HOST=alfhost
+          - SOLR_ALFRESCO_PORT=8080
+          #Alfresco needs to know how to call solr
+          - SOLR_SOLR_HOST=solrhost
+          - SOLR_SOLR_PORT=8983
+          #Create the default alfresco and archive cores
+          - SOLR_CREATE_ALFRESCO_DEFAULTS=alfresco,archive
+      depends_on: 
+        - alfhost
+      ports:
+          - 127.0.0.1:8083:8983 #Browser port
+      volumes: 
+        - ./solrdata:/opt/alfresco-search-services/data
+        - ./solrarchive:/opt/alfresco-search-services/solrhome/archive
+        - ./solraalfresco:/opt/alfresco-search-services/solrhome/alfresco
+      depends_on: 
+        - alfhost
+
+    nginxhost:
+      image: loftux/lx_alfresco_nginx:latest
+      ports:
+        - 80:80
+        - 443:443
+      depends_on: 
+        - alfhost
+      volumes:
+        - ./nginxssl:/etc/nginx/ssl
+        - ./nginxconf:/etc/nginx/conf.d
