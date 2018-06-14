@@ -33,17 +33,17 @@ This image adds Libreoffice, Imagemagick, Alfresco PDF Renderer, JDBC drivers an
 NOTE: The included alfresco-global.properties is customized to fit the latest version of LXCommunity ECM that has JodConverter support. You need to change this in order to run LibreOffice with an older version of Alfreco.
 
 ## lx_corp_alfresco
-This is image just adds the final alfresco.war. In the default setup it downloads and expands via curl, but you can easily change this to copy a local alfresco.war with all your customizations instead. IF you need a custom alfresco-global.properties, you can override the one included from lx_debian_alfbase by adding `COPY alfresco-global.properties ${CATALINA_HOME}/shareddefault/classes/` to the Dockerfile.     
+This is image extends from `lx_debian_alfbase` and adds the final alfresco.war. In the default setup it downloads and expands via curl, but you can easily change this to copy a local alfresco.war with all your customizations instead. IF you need a custom alfresco-global.properties, you can override the one included from lx_debian_alfbase by adding `COPY alfresco-global.properties ${CATALINA_HOME}/shareddefault/classes/` to the Dockerfile.     
 *If you do customize, we recommend you change the buildall.sh script to use a custom tag.*
 
 The folder corporatefonts can be used to add custom fonts that is used by your organization to get better results for LibreOffice transformations/previews.
 
 ## lx_corp_share
-This is image just adds the final share.war. In the default setup it downloads and expands via curl, but you can easily change this to copy a local alfresco.war with all your customizations instead.  
+This is image extends from `lx_debian_tomcatbase` and adds the final share.war and share-custom-config configurations. In the default setup it downloads and expands via curl, but you can easily change this to copy a local alfresco.war with all your customizations instead.  
 *If you do customize, we recommend you change the buildall.sh script to use a custom tag.*
 
 ## lx_alfresco_search
-This image runs Alfresco Search Services, Solr6.
+This image runs Alfresco Search Services, Solr6. Extends from Alpine docker image.
 
 **VOLUMES**  
 `/opt/alfresco-search-services/data` - The index data.  
